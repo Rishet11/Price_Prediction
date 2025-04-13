@@ -1,1 +1,0 @@
-web: gunicorn price_pred.server:app 

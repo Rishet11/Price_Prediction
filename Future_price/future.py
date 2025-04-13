@@ -1,11 +1,16 @@
-import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
 df=pd.read_csv('Future_price/Future_years.csv')
+
+
 Years= df.drop(['RegionID','SizeRank','RegionName','StateName'], axis=1)
+
+
 Entries= Years.drop('RegionType', axis=1)
+
+
 
 #Filter specific region
 def find_region_rows(region_name):
@@ -17,6 +22,10 @@ def find_region_rows(region_name):
 def Graph(df, region_name):
     row= find_region_rows(region_name)
     X=df.iloc[row, :]
+
+
+    # Example: Suppose df has 1 row and multiple columns, each column is a date
+    # and the single row holds property prices.
 
     # Step 1: Transpose the DataFrame so columns become rows
     df_t = X.T  # Now each row is a (date, price) pair
@@ -35,7 +44,18 @@ def Graph(df, region_name):
     plt.xlabel("Date")
     plt.ylabel("Price")
     plt.show()
-    
+
+Graph(Entries, 'United States')
+
+"""## **Model Creation**
+
+"""
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from prophet import Prophet
+
 def Data_Extract(region_name):
     # Find row index for the region
     row_idx = df[df['RegionName'] == region_name].index[0]
@@ -54,4 +74,44 @@ def Data_Extract(region_name):
 
     return data
 
-print(Data_Extract('Chicago, IL'))
+# Test the function
+Prices = Data_Extract('United States')
+
+# Optional: Add basic validation
+# print(f"\nShape of extracted data: {Prices.shape}")
+# print(f"Date range: {Prices['Date'].min()} to {Prices['Date'].max()}")
+
+def pred(df, region_name):
+    data = Data_Extract(region_name)
+
+    # Create Prophet model
+    m = Prophet()
+
+    # Rename columns for Prophet
+    prophet_data = data.rename(columns={
+        'Date': 'ds',
+        'Property_Value': 'y'
+    })
+
+    # Fit the model
+    m.fit(prophet_data)
+
+    # Create future dates dataframe
+    future = m.make_future_dataframe(periods=3650)
+
+    # Make predictions
+    forecast = m.predict(future)
+    m.plot_components(forecast)
+
+    # Visualize results
+    fig = m.plot(forecast)
+    plt.title(f'Property Value Predictions - {region_name}')  # Move title inside function
+    plt.xlabel('Date')
+    plt.ylabel('Property Value ($)')
+    plt.tight_layout()
+    plt.show()
+
+    return m, forecast
+
+# Test the function
+# model, predictions = pred(df, 'United States')
