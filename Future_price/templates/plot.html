@@ -52,17 +52,55 @@
             box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3);
         }
         .plot-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            text-align: center;
             background: white;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 30px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transform: translateX(-100px) scale(0.95);
+            animation: slideIn 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
-        .plot-container h5 {
-            color: #0d47a1;
-            font-weight: 600;
-            margin-bottom: 20px;
-            font-size: 1.25rem;
+        
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-400px) scale(0.95);
+            }
+            30% {
+                opacity: 0.3;
+            }
+            60% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+        
+        .plot-container:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .plot-container:nth-child(3) {
+            animation-delay: 0.8s;
+        }
+        
+        .plot-image {
+            width: 100%;
+            height: auto;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
         }
         img {
             max-width: 100%;
@@ -79,8 +117,8 @@
         }
         .plot-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(900px, 1fr));
+            gap: 40px;
             margin-bottom: 30px;
         }
     </style>
@@ -95,15 +133,12 @@
                 </h2>
             </div>
             <div class="card-body">
-                <div class="plot-grid">
-                    <div class="plot-container">
-                        <h5><i class="fas fa-chart-area me-2"></i>Property Value Forecast</h5>
-                        <img src="data:image/png;base64,{{ forecast_plot }}" alt="Forecast Plot" class="img-fluid">
-                    </div>
-                    <div class="plot-container">
-                        <h5><i class="fas fa-chart-bar me-2"></i>Forecast Components</h5>
-                        <img src="data:image/png;base64,{{ components_plot }}" alt="Components Plot" class="img-fluid">
-                    </div>
+                <div class="plot-container">
+                    <h2>Property Value Forecast</h2>
+                    <img class="plot-image" src="data:image/png;base64,{{ forecast_plot }}" alt="Forecast Plot">
+                    
+                    <h2>Forecast Components</h2>
+                    <img class="plot-image" src="data:image/png;base64,{{ components_plot }}" alt="Components Plot">
                 </div>
                 <div class="text-center back-button">
                     <a href="/" class="btn btn-primary btn-lg">

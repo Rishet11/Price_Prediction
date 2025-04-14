@@ -19,14 +19,15 @@ app = Flask(__name__)
 sns.set_theme(style="whitegrid")
 
 # Update the figure size and DPI for better quality
-plt.rcParams['figure.figsize'] = [12, 8]
+plt.rcParams['figure.figsize'] = [12, 16]
 plt.rcParams['figure.dpi'] = 100
 plt.rcParams['font.size'] = 12
 plt.rcParams['axes.titlesize'] = 16
 plt.rcParams['axes.labelsize'] = 14
 
 def create_plot():
-    # Add padding around the plot
+    # Center the plot and add padding
+    plt.subplots_adjust(top=0.95, bottom=0.1, left=0.1, right=0.9)
     plt.tight_layout(pad=3.0)
     img = io.BytesIO()
     plt.savefig(img, format='png', bbox_inches='tight', dpi=100)
@@ -82,23 +83,31 @@ def predict():
               fontsize=16, 
               fontweight='bold', 
               pad=20)
-    plt.xlabel('Date', fontsize=14)
-    plt.ylabel('Property Value ($)', fontsize=14)
-    plt.grid(True, linestyle='--', alpha=0.7)
-    plt.legend(['Historical Data', 'Forecast', 'Uncertainty Interval'], 
+    # Update x and y axis labels for better clarity
+    plt.xlabel('Years', fontsize=14, labelpad=10)
+    plt.ylabel('Property Value ($)', fontsize=14, labelpad=10)
+    plt.grid(True, linestyle='--', alpha=0.8)
+
+    plt.legend(['Historical Data', 'Forecast', '95% Confidence Interval'], 
               loc='upper left', 
               fontsize=12,
               frameon=True,
               facecolor='white',
               edgecolor='none',
               shadow=True)
+    # Center the plot
+    plt.subplots_adjust(top=0.95, bottom=0.1, left=0.1, right=0.9)
     plot_url1 = create_plot()
 
     # Create the components plot with enhanced styling
     fig2 = m.plot_components(forecast)
+    # Ensure y-axis intervals are added to the second component plot
     for ax in fig2.get_axes():
         ax.set_title(ax.get_title(), fontsize=14, pad=10)
         ax.tick_params(labelsize=12)
+        ax.yaxis.set_major_locator(plt.MaxNLocator(nbins=7))  # Explicitly set more y-axis intervals
+        # Center each subplot
+        ax.set_position([0.1, ax.get_position().y0, 0.8, ax.get_position().height])
     plt.tight_layout(pad=3.0)
     plot_url2 = create_plot()
     
